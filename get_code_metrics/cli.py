@@ -1,11 +1,11 @@
 import os.path
 import sys
 from argparse import ArgumentParser
+import re
 
 
 def command_parser():
     parser = ArgumentParser()
-    print('parseした結果(入力ファイルと出力ファイルを返す)')
     parser.add_argument('path_to_input_file',
                         type=str)
     parser.add_argument('-o',
@@ -27,9 +27,10 @@ def command_parser():
 
 def get_repository_list(path_to_input_file: str):
     repository_list = []
-    print('repository listがあるなら返す，ないならエラーで終了')
     with open(path_to_input_file, 'r') as f:
         for repository in f:
+            # 末尾の改行を削除してリストに追加
+            repository = re.sub('[\r\n]+$', '', repository)
             repository_list.append(repository)
 
     if not repository_list:
@@ -45,7 +46,7 @@ def check_directory_exist(path_to_output_file: str, create_force: bool):
     # コマンドの指定でdirectory pathが存在し，directory pathが実行時の環境に存在せず
     # かつforceフラグが立っている場合
     if directory_path and not os.path.exists(directory_path) and create_force:
-        print('make directory! ', directory_path)
+        print('make directory!: ', directory_path)
         os.makedirs(directory_path, exist_ok=True)
         return
 
