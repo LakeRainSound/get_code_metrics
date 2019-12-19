@@ -4,8 +4,7 @@ import get_code_metrics.cloc.cloc_analyze as cloc
 
 def main():
     # 引数としてパスを私そのパスが示すfileからリストが返される
-    repository_list, output_file_path = cli.parser()
-
+    repository_list, output_file_path = cli.command_parser()
     # repository listのrepositoryをcloneする
     print('call clone function and return cloned repositories path')
 
@@ -24,3 +23,5 @@ def main():
     print('call github api(repository info) function')
 
 
+if __name__ == '__main__':
+    main()
