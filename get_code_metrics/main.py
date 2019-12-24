@@ -24,6 +24,8 @@ def main():
 
     # github apiでissue情報を取得する
     print('call github api(repository info) function')
+    label_info = ghapi.GithubIssueInfo(access_token)
+    label_info.get_all_repositories_label_metrics(repository_list)
 
 
 if __name__ == '__main__':
