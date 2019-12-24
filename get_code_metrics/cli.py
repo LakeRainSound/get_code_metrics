@@ -57,6 +57,9 @@ def get_repository_list(path_to_input_file: str):
         for repository in f:
             # 末尾の改行を削除してリストに追加
             repository = re.sub('[\r\n]+$', '', repository)
+            # 最後に空行入れたりしてる場合を排除
+            if repository == '' or len(repository) == 0:
+                continue
             repository_list.append(repository)
 
     if not repository_list:
@@ -72,15 +75,6 @@ def check_directory_exist(path_to_output_dir: Path):
 
     path_to_output_dir.mkdir(parents=True)
     print('make directory: ', path_to_output_dir)
-
-
-def check_filename_exist(filename: str):
-
-    if filename == '' or filename == '.':
-        print('Error: You don\'t specify filename', file=sys.stderr)
-        sys.exit(1)
-    else:
-        return
 
 
 def get_access_token(token: str):
