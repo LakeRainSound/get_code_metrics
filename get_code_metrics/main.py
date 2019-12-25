@@ -1,6 +1,8 @@
 import get_code_metrics.cli as cli
 import get_code_metrics.cloc.cloc_analyze as cloc
 import get_code_metrics.github_api.github_api as ghapi
+import get_code_metrics.github_clone.github_clone as ghclone
+from pathlib import Path
 
 
 def main():
@@ -9,13 +11,11 @@ def main():
     # repository listのrepositoryをcloneする
     print('call clone function and return cloned repositories path')
 
-    # cloneしたrepositoryをclocで分析した結果を返す
+    # repositoryをcloneする
     print('call cloc analysis function')
-    cloc_obj = cloc.Cloc(repository_list)
-    # 必要なrepository_listをclone
-    cloc_obj.clone_repository()
-    #
-    cloc_obj.get_cloc_results()
+    repository_url_list = ghclone.get_github_repository_url_list(repository_list)
+    clone = ghclone.GHQ(Path('./ghq'), clone_path)
+    clone.clone(repository_url_list)
 
     # github apiでrepository情報を取得する
     print('call github api(repository info) function')
