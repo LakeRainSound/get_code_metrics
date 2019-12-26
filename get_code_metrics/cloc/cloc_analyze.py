@@ -38,7 +38,7 @@ class Cloc:
         cloc_result_str = ''.join(cloc_result_list)
         cloc_result_json = json.loads(cloc_result_str)
 
-        return {repository_name: cloc_result_json}
+        return {repository_name: {'cloc': cloc_result_json}}
 
     def get_cloc_results(self):
         res = {}
@@ -62,5 +62,4 @@ class Cloc:
             cloc_json = self.get_cloc_dict(repository_name, cloc_result_list)
             res.update(cloc_json)
 
-        print(json.dumps(res, indent=4))
         return res
