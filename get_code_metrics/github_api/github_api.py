@@ -108,13 +108,13 @@ class GithubIssueInfo:
             return None
 
         label_metrics = {}
-        label_metrics.update({'issueCount': issues['issueCount']})
+        label_metrics.update({'closedIssueCount': issues['issueCount']})
         has_label_count = 0
         for issue in issues["title_and_label"]:
             if issue['labels']['labelCount'] > 0:
                 has_label_count += 1
 
-        label_metrics.update({"hasLabelCount": has_label_count})
+        label_metrics.update({"hasLabelClosedIssue": has_label_count})
 
         return label_metrics
 
