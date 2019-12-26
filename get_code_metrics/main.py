@@ -4,7 +4,6 @@ import get_code_metrics.github_api.github_api as ghapi
 import get_code_metrics.github_clone.github_clone as ghclone
 import get_code_metrics.gcm_output.output as gcmo
 from pathlib import Path
-import get_code_metrics.gcm_output.output as gcm_out
 
 
 def main():
