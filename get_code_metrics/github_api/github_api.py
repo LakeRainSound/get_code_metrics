@@ -74,6 +74,13 @@ class GithubIssueInfo:
         while has_next_page:
             query = self.create_issues_info_query(name_with_owner, cursor)
             data_info = post_query(query, self.access_token)
+
+            # repositoryが存在しないならNoneを返す
+            if 'errors' in data_info:
+                print('ERRORS:', name_with_owner,
+                      'doesn\'t exists or has errors. so can\'t get it.')
+                return None
+
             issues_info = data_info['data']['repository']['issues']
 
             # 初回はissueの数を入れる
@@ -82,12 +89,6 @@ class GithubIssueInfo:
             # title_and_labelリストに追加
             for issue in issues_info['title_and_label']:
                 label_info["title_and_label"].append(issue)
-
-            # repositoryが存在しないならNoneを返す
-            if 'errors' in data_info:
-                print('ERRORS:', name_with_owner,
-                      'doesn\'t exists or has errors. so can\'t get it.')
-                return None
 
             # 最後に続きがあるか判定，cursorに続きを代入
             has_next_page = issues_info['pageInfo']['hasNextPage']
