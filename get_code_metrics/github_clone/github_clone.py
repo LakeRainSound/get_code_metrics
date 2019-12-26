@@ -43,10 +43,9 @@ def _download_ghq_binary(dest: 'Path'):
 
 
 def get_github_repository_url_list(repository_list):
-    repository_url_list = []
-    for repository in repository_list:
-        repository_url_list.append('https://github.com/' + repository)
+    repository_url_list = list(map(lambda x: 'https://github.com/' + x, repository_list))
 
+    print(repository_url_list)
     return repository_url_list
 
 
