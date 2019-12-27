@@ -17,19 +17,8 @@ def main():
     # 引数としてパスを私そのパスが示すfileからリストが返される
     repository_list, path_to_output_file, ghq_root, access_token = cli.command_parser()
 
-    # github apiでrepository情報を取得する
-    print('call github api(repository info) function')
-    repo_info = ghapi.GithubRepositoryInfo(access_token)
-    result_repo_info = repo_info.get_all_repositories_info(repository_list)
-    # jsonを結果としてリストに追加
-    result_json_list.append(result_repo_info)
-
-    # github apiでissue情報を取得する
-    print('call github api(repository info) function')
-    label_info = ghapi.GithubIssueInfo(access_token)
-    result_label_info = label_info.get_all_repositories_label_metrics(repository_list)
-    # jsonを結果としてリストに追加
-    result_json_list.append(result_label_info)
+    github_api_result = ghapi.get_github_api_result(repository_list, access_token)
+    result_json_list.append(github_api_result)
 
     # repositoryをcloneする
     repository_url_list = ghclone.get_github_repository_url_list(repository_list)
