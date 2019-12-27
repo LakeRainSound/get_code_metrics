@@ -2,7 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/1b54b0aff9a8b416f0bb97eaec045d2eceb842b9/github.com/LakeRainSound/get_code_metrics" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/1b54b0aff9a8b416f0bb97eaec045d2eceb842b9/github.com/LakeRainSound/sample-java-project" vcs="Git" />
   </component>
 </project>
