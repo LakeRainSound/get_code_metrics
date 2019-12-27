@@ -34,24 +34,24 @@ def command_parser():
 
     args = parser.parse_args()
 
-    repository_list = get_repository_list(args.path_to_input_file)
+    repository_list = _get_repository_list(args.path_to_input_file)
 
     # args.outは最後がfile名なのでdirectoryとfile名を分けてdirectoryを渡す
     out_path = args.out  # type: Path
     out_path = out_path.expanduser().resolve()
-    check_directory_exist(out_path.parent)
+    _make_directory(out_path.parent)
 
     # args.cloneはディレクトリなのでそのまま渡す
     clone_path = args.clone  # type: Path
     clone_path = clone_path.expanduser().resolve()
-    check_directory_exist(clone_path)
+    _make_directory(clone_path)
 
-    access_token = get_access_token(args.token)
+    access_token = _get_access_token(args.token)
 
     return repository_list, out_path, clone_path, access_token
 
 
-def get_repository_list(path_to_input_file: str):
+def _get_repository_list(path_to_input_file: str):
     repository_list = []
     with open(path_to_input_file, 'r') as f:
         for repository in f:
@@ -69,7 +69,7 @@ def get_repository_list(path_to_input_file: str):
     return repository_list
 
 
-def check_directory_exist(path_to_output_dir: Path):
+def _make_directory(path_to_output_dir: Path):
     if path_to_output_dir.exists():
         return
 
@@ -77,7 +77,7 @@ def check_directory_exist(path_to_output_dir: Path):
     print('make directory: ', path_to_output_dir)
 
 
-def get_access_token(token: str):
+def _get_access_token(token: str):
     env_token = os.getenv('GCM_GITHUB_TOKEN')
     if token is None or len(token) == 0:
         if env_token is None or len(env_token) == 0:
