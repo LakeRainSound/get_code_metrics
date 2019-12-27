@@ -33,7 +33,7 @@ class Cloc:
     def get_cloc_dict(repository_name, cloc_result_list):
         # listが空なら(repositoryに中身がないなら)そのまま返す
         if len(cloc_result_list) == 0:
-            return {repository_name: {}}
+            return {repository_name: {'cloc': {}}}
 
         cloc_result_str = ''.join(cloc_result_list)
         cloc_result_json = json.loads(cloc_result_str)
@@ -62,4 +62,5 @@ class Cloc:
             cloc_json = self.get_cloc_dict(repository_name, cloc_result_list)
             res.update(cloc_json)
 
-        return res
+        cloc_result = {'repository': res}
+        return cloc_result

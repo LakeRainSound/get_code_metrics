@@ -23,13 +23,12 @@ class GCMOUT:
                                               'finish time': self.finish_time.isoformat()}}
                                 )
 
-        self.all_results.update({'repository': dict_list[0]})
-        for dict_key in dict_list[0].keys():  # type: dict
+        self.all_results.update(dict_list[0])
+
+        for dict_key in dict_list[0]['repository'].keys():
             for dict_ in dict_list:
-                if dict_key in dict_:
-                    self.all_results['repository'][dict_key].update(dict_[dict_key])
+                if dict_key in dict_['repository']:
+                    self.all_results['repository'][dict_key].update(dict_['repository'][dict_key])
 
         with open(str(path_to_output_file), "w") as f:
             json.dump(self.all_results, f, indent=4)
-
-
