@@ -1,5 +1,6 @@
 import get_code_metrics.github_api.repository_info as gh_repo
 import get_code_metrics.github_api.label_info as gh_label
+import json
 
 
 def _get_linked_github_api_result(result_list):
