@@ -16,6 +16,20 @@ def post_query(query, access_token):
     return res.json()
 
 
+def avoid_api_limit(access_token: str):
+    query_state = """
+                    query{
+                      rateLimit {
+                        remaining
+                      }
+                    }
+                    """
+    data_info = post_query({'query': query_state}, access_token)
+    # API制限を回避
+    if data_info['data']['rateLimit']['remaining'] <= 1000:
+        time.sleep(3600)
+
+
 class GithubIssueInfo:
     access_token = ''
 
@@ -84,7 +98,7 @@ class GithubIssueInfo:
             issues_info = data_info['data']['repository']['issues']
 
             # 初回はissueの数を入れる
-            label_info.setdefault("issueCount", issues_info['totalCount'])
+            label_info.setdefault("closedIssueCount", issues_info['totalCount'])
 
             # title_and_labelリストに追加
             for issue in issues_info['title_and_label']:
@@ -108,7 +122,7 @@ class GithubIssueInfo:
             return None
 
         label_metrics = {}
-        label_metrics.update({'closedIssueCount': issues['issueCount']})
+        label_metrics.update({'closedIssueCount': issues['closedIssueCount']})
         has_label_count = 0
         for issue in issues["title_and_label"]:
             if issue['labels']['labelCount'] > 0:
@@ -121,10 +135,11 @@ class GithubIssueInfo:
     def get_all_repositories_label_metrics(self, repository_list):
         all_repositories_label_metrics = {}
 
+        # APIがはじめに制限にかかりそうならsleepを挟む
+        avoid_api_limit(self.access_token)
+
         for repository in repository_list:
             label_metrics = self.get_label_metrics(repository)
-            if label_metrics is None:
-                continue
 
             all_repositories_label_metrics.update({repository: label_metrics})
 
@@ -192,6 +207,10 @@ class GithubRepositoryInfo:
 
     def get_all_repositories_info(self, repository_list):
         res_all_repository = {}
+
+        # APIがはじめに制限にかかりそうならsleepを挟む
+        avoid_api_limit(self.access_token)
+
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
 
