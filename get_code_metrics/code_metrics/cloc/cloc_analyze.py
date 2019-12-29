@@ -28,7 +28,7 @@ class Cloc:
     @staticmethod
     def _get_error_massage(repository_name, cloc_result_list):
         cloc_result_str = ''.join(cloc_result_list)
-        return {repository_name: {'cloc': {'error': cloc_result_str}}}
+        return {repository_name: {'cloc': {'errors': cloc_result_str}}}
 
     @staticmethod
     def get_cloc_dict(repository_name, cloc_result_list):
@@ -57,8 +57,8 @@ class Cloc:
 
             # clocの結果にエラーがあればエラーメッセージを記録
             if self._is_error(cloc_result_list):
-                cloc_result.update(self._get_error_massage(repository_name,
-                                                           cloc_result_list))
+                error_message = self._get_error_massage(repository_name, cloc_result_list)
+                cloc_result.update(error_message)
                 continue
 
             # clocの結果をdict化する

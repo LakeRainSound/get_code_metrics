@@ -107,10 +107,6 @@ class LabelInfo:
 
         for repository in repository_list:
             label_metrics = self.get_label_metrics(repository)
-
-            # Noneが返ってきていたらエラーが発生したかリポジトリが存在しないかなので飛ばす
-            # if label_metrics is None:
-            #     continue
             all_repositories_label_metrics.update({repository: label_metrics})
 
         return all_repositories_label_metrics
