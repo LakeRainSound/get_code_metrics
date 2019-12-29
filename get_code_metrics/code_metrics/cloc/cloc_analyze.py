@@ -41,7 +41,7 @@ class Cloc:
         return {repository_name: {'cloc': cloc_result_json}}
 
     def get_cloc_results(self):
-        res = {}
+        cloc_result = {}
         for repository_name in self.repository_list:
             # ディレクトリのパスを代入
             repository_dir = self.path_to_ghq_root / 'github.com' / repository_name
@@ -60,7 +60,6 @@ class Cloc:
 
             # clocの結果をdict化する
             cloc_json = self.get_cloc_dict(repository_name, cloc_result_list)
-            res.update(cloc_json)
+            cloc_result.update(cloc_json)
 
-        cloc_result = {'repository': res}
         return cloc_result
