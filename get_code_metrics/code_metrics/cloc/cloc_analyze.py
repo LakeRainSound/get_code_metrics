@@ -5,17 +5,14 @@ import json
 
 
 class Cloc:
-    repository_list = []
-    path_to_ghq_root = Path('')
-
     def __init__(self, repository_list, path_to_ghq_root: Path):
         self.repository_list = repository_list
         self.path_to_ghq_root = path_to_ghq_root
 
     @staticmethod
-    def _get_analyzed_cloc(repository_dir):
+    def _get_analyzed_cloc(repository_dir: Path):
         return subprocess.Popen(
-            ['cloc', '--json', repository_dir],
+            ['cloc', '--json', str(repository_dir)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding='utf-8'
@@ -23,6 +20,9 @@ class Cloc:
 
     @staticmethod
     def _is_error(cloc_result_list):
+        for cloc_result in cloc_result_list:
+            print(cloc_result)
+
         for cloc_result in cloc_result_list:
             if re.search('error', cloc_result) is not None:
                 return True
@@ -44,7 +44,7 @@ class Cloc:
         res = {}
         for repository_name in self.repository_list:
             # ディレクトリのパスを代入
-            repository_dir = str(self.path_to_ghq_root) + '/github.com/' + repository_name
+            repository_dir = self.path_to_ghq_root / 'github.com' / repository_name
 
             # processを生成，実行
             cloc_process = self._get_analyzed_cloc(repository_dir)

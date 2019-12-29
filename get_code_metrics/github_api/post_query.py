@@ -13,7 +13,7 @@ def post_query(query, access_token):
     return res.json()
 
 
-def avoid_api_limit(access_token: str):
+def first_avoid_api_limit(access_token: str):
     query_state = """
                     query{
                       rateLimit {
@@ -23,5 +23,10 @@ def avoid_api_limit(access_token: str):
                     """
     data_info = post_query({'query': query_state}, access_token)
     # API制限を回避
+    if data_info['data']['rateLimit']['remaining'] <= 1000:
+        time.sleep(3600)
+
+
+def avoid_api_limit(data_info):
     if data_info['data']['rateLimit']['remaining'] <= 1000:
         time.sleep(3600)

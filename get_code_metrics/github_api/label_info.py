@@ -1,10 +1,9 @@
+import json
 import time
 import get_code_metrics.github_api.post_query as post_query
 
 
 class LabelInfo:
-    access_token = ''
-
     def __init__(self, access_token):
         self.access_token = access_token
 
@@ -81,8 +80,7 @@ class LabelInfo:
             cursor = issues_info['pageInfo']['endCursor']
 
             # API制限を回避
-            if data_info['data']['rateLimit']['remaining'] <= 1000:
-                time.sleep(3600)
+            post_query.avoid_api_limit(data_info)
 
         return label_info
 
@@ -92,7 +90,6 @@ class LabelInfo:
         # errorが発生した場合
         if issues is None:
             return None
-
         label_metrics = {}
         label_metrics.update({'closedIssueCount': issues['closedIssueCount']})
         has_label_count = 0
@@ -108,7 +105,7 @@ class LabelInfo:
         all_repositories_label_metrics = {}
 
         # APIがはじめに制限にかかりそうならsleepを挟む
-        post_query.avoid_api_limit(self.access_token)
+        post_query.first_avoid_api_limit(self.access_token)
 
         for repository in repository_list:
             label_metrics = self.get_label_metrics(repository)

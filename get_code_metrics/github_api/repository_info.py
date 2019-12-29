@@ -1,11 +1,7 @@
-import time
 import get_code_metrics.github_api.post_query as post_query
 
 
 class RepositoryInfo:
-    query_repository_state = ''
-    access_token = ''
-
     def __init__(self, token):
         self.access_token = token
 
@@ -56,8 +52,7 @@ class RepositoryInfo:
             return None
 
         # API制限回避のためrateLimitが1000以下ならsleep
-        if repository_info['data']['rateLimit']['remaining'] <= 1000:
-            time.sleep(3600)
+        post_query.avoid_api_limit(repository_info)
 
         return repository_info['data']['repository']
 
@@ -65,7 +60,7 @@ class RepositoryInfo:
         res_all_repository = {}
 
         # APIがはじめに制限にかかりそうならsleepを挟む
-        post_query.avoid_api_limit(self.access_token)
+        post_query.first_avoid_api_limit(self.access_token)
 
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
