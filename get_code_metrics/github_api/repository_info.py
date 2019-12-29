@@ -45,11 +45,9 @@ class RepositoryInfo:
         # queryとアクセストークンを渡してpost
         repository_info = post_query.post_query(query, self.access_token)
 
-        # repositoryが存在しないならNoneを返す
+        # repositoryが存在しないならerrorオブジェクトを返す
         if 'errors' in repository_info:
-            print('ERRORS:', name_with_owner,
-                  'doesn\'t exists or has errors. so can\'t get it.')
-            return None
+            return {'errors': repository_info['errors']}
 
         # API制限回避のためrateLimitが1000以下ならsleep
         post_query.avoid_api_limit(repository_info)
@@ -65,9 +63,6 @@ class RepositoryInfo:
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
 
-            # 返り値がNoneなら何もしない
-            if repository_info is None:
-                continue
             res_all_repository.update({repository: repository_info})
 
         return res_all_repository

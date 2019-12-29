@@ -1,6 +1,5 @@
 import subprocess
 from pathlib import Path
-import re
 import json
 
 
@@ -21,13 +20,15 @@ class Cloc:
     @staticmethod
     def _is_error(cloc_result_list):
         for cloc_result in cloc_result_list:
-            print(cloc_result)
-
-        for cloc_result in cloc_result_list:
-            if re.search('error', cloc_result) is not None:
+            if 'Unable to read:' in cloc_result:
                 return True
 
         return False
+
+    @staticmethod
+    def _get_error_massage(repository_name, cloc_result_list):
+        cloc_result_str = ''.join(cloc_result_list)
+        return {repository_name: {'cloc': {'error': cloc_result_str}}}
 
     @staticmethod
     def get_cloc_dict(repository_name, cloc_result_list):
@@ -54,8 +55,10 @@ class Cloc:
                     break
             cloc_process.terminate()
 
-            # clocの結果にエラーがあれば以降の処理はせずループの最初に戻る
+            # clocの結果にエラーがあればエラーメッセージを記録
             if self._is_error(cloc_result_list):
+                cloc_result.update(self._get_error_massage(repository_name,
+                                                           cloc_result_list))
                 continue
 
             # clocの結果をdict化する

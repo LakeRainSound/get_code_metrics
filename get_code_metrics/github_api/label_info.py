@@ -1,5 +1,3 @@
-import json
-import time
 import get_code_metrics.github_api.post_query as post_query
 
 
@@ -60,11 +58,9 @@ class LabelInfo:
             query = self.create_issues_info_query(name_with_owner, cursor)
             data_info = post_query.post_query(query, self.access_token)
 
-            # repositoryが存在しないならNoneを返す
+            # repositoryが存在しないならerrorオブジェクトを返す
             if 'errors' in data_info:
-                print('ERRORS:', name_with_owner,
-                      'doesn\'t exists or has errors. so can\'t get it.')
-                return None
+                return {'errors': data_info['errors']}
 
             issues_info = data_info['data']['repository']['issues']
 
@@ -87,10 +83,12 @@ class LabelInfo:
     def get_label_metrics(self, name_with_owner):
         issues = self.get_issues(name_with_owner)
 
-        # errorが発生した場合
-        if issues is None:
-            return None
         label_metrics = {}
+
+        # errorが発生した場合
+        if 'errors' in issues:
+            return issues
+
         label_metrics.update({'closedIssueCount': issues['closedIssueCount']})
         has_label_count = 0
         for issue in issues["title_and_label"]:
@@ -111,8 +109,8 @@ class LabelInfo:
             label_metrics = self.get_label_metrics(repository)
 
             # Noneが返ってきていたらエラーが発生したかリポジトリが存在しないかなので飛ばす
-            if label_metrics is None:
-                continue
+            # if label_metrics is None:
+            #     continue
             all_repositories_label_metrics.update({repository: label_metrics})
 
         return all_repositories_label_metrics
