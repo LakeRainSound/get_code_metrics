@@ -21,7 +21,7 @@ def post_query(query, access_token):
 
     try:
         res = session.post(endpoint, json=query, headers=headers)
-        if res.status_code == 200:
+        if res.status_code != 200:
             raise Exception("Failed. HTTPS ERROR CODE: {}".format(res.status_code))
     except Exception as e:
         raise
