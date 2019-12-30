@@ -1,5 +1,9 @@
 import time
 import requests
+import sys
+from types import TracebackType
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 
 def post_query(query, access_token):
@@ -7,10 +11,27 @@ def post_query(query, access_token):
 
     # endpoint
     endpoint = 'https://api.github.com/graphql'
-    res = requests.post(endpoint, json=query, headers=headers)
-    if res.status_code != 200:
-        raise Exception("failed : {}".format(res.status_code))
+
+    session = requests.Session()
+    retries = Retry(total=5,
+                    backoff_factor=1,
+                    status_forcelist=[500, 502, 503, 504])
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+    session.mount('http://', HTTPAdapter(max_retries=retries))
+
+    try:
+        res = session.post(endpoint, json=query, headers=headers)
+        if res.status_code != 200:
+            raise Exception("failed : {}".format(res.status_code))
+    except Exception as e:
+        raise
+
     return res.json()
+
+
+def get_post_error(e: Exception):
+    tb = sys.exc_info()[2]  # type: TracebackType
+    return {'errors': e.args}
 
 
 def first_avoid_api_limit(access_token: str):
@@ -21,7 +42,11 @@ def first_avoid_api_limit(access_token: str):
                       }
                     }
                     """
-    data_info = post_query({'query': query_state}, access_token)
+    try:
+        data_info = post_query({'query': query_state}, access_token)
+    except Exception as e:
+        print('ERROR: first_avoid_api')
+        return
     # API制限を回避
     if data_info['data']['rateLimit']['remaining'] <= 1000:
         time.sleep(3600)

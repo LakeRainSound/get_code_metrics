@@ -1,4 +1,5 @@
-import get_code_metrics.github_api.post_query as post_query
+import json
+import get_code_metrics.github_api.post_query as pq
 
 
 class RepositoryInfo:
@@ -43,14 +44,17 @@ class RepositoryInfo:
         # queryを作成
         query = self.create_repository_info_query(name_with_owner)
         # queryとアクセストークンを渡してpost
-        repository_info = post_query.post_query(query, self.access_token)
+        try:
+            repository_info = pq.post_query(query, self.access_token)
+        except Exception as e:
+            return pq.get_post_error(e)
 
         # repositoryが存在しないならerrorオブジェクトを返す
         if 'errors' in repository_info:
             return {'errors': repository_info['errors']}
 
         # API制限回避のためrateLimitが1000以下ならsleep
-        post_query.avoid_api_limit(repository_info)
+        pq.avoid_api_limit(repository_info)
 
         return repository_info['data']['repository']
 
@@ -58,11 +62,10 @@ class RepositoryInfo:
         res_all_repository = {}
 
         # APIがはじめに制限にかかりそうならsleepを挟む
-        post_query.first_avoid_api_limit(self.access_token)
+        pq.first_avoid_api_limit(self.access_token)
 
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
-
             res_all_repository.update({repository: repository_info})
 
         return res_all_repository
