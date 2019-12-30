@@ -1,5 +1,6 @@
 import json
 import get_code_metrics.github_api.post_query as pq
+from sys import exc_info
 
 
 class RepositoryInfo:
@@ -47,6 +48,8 @@ class RepositoryInfo:
         try:
             repository_info = pq.post_query(query, self.access_token)
         except Exception as e:
+            tb = exc_info()[2]
+            print('ERROR: {} {}'.format(name_with_owner, e.with_traceback(tb)))
             return pq.get_post_error(e)
 
         # repositoryが存在しないならerrorオブジェクトを返す

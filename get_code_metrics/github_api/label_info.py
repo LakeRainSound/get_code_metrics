@@ -1,4 +1,5 @@
 import get_code_metrics.github_api.post_query as pq
+from sys import exc_info
 
 
 class LabelInfo:
@@ -79,13 +80,12 @@ class LabelInfo:
                 # API制限を回避
                 pq.avoid_api_limit(data_info)
         except Exception as e:
-            return pq.get_post_error(e)
+            raise
 
         return label_info
 
-    def get_label_metrics(self, name_with_owner):
-        issues = self.get_issues(name_with_owner)
-
+    @staticmethod
+    def _get_label_metrics(issues):
         label_metrics = {}
 
         # errorが発生した場合
@@ -109,7 +109,13 @@ class LabelInfo:
         pq.first_avoid_api_limit(self.access_token)
 
         for repository in repository_list:
-            label_metrics = self.get_label_metrics(repository)
-            all_repositories_label_metrics.update({repository: label_metrics})
+            try:
+                issues = self.get_issues(repository)
+                label_metrics = self._get_label_metrics(issues)
+                all_repositories_label_metrics.update({repository: label_metrics})
+            except Exception as e:
+                tb = exc_info()[2]
+                print('ERROR: {} {}'.format(repository, e.with_traceback(tb)))
+                return {repository: pq.get_post_error(e)}
 
         return all_repositories_label_metrics
