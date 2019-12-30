@@ -22,7 +22,7 @@ def post_query(query, access_token):
     try:
         res = session.post(endpoint, json=query, headers=headers)
         if res.status_code != 200:
-            raise Exception("failed : {}".format(res.status_code))
+            raise Exception("Failed. HTTPS ERROR CODE: {}".format(res.status_code))
     except Exception as e:
         raise
 
@@ -31,7 +31,7 @@ def post_query(query, access_token):
 
 def get_post_error(e: Exception):
     tb = sys.exc_info()[2]  # type: TracebackType
-    return {'errors': e.args}
+    return {'errors': '{}'.format(e.with_traceback(tb))}
 
 
 def first_avoid_api_limit(access_token: str):
