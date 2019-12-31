@@ -19,12 +19,9 @@ def post_query(query, access_token):
     session.mount('https://', HTTPAdapter(max_retries=retries))
     session.mount('http://', HTTPAdapter(max_retries=retries))
 
-    try:
-        res = session.post(endpoint, json=query, headers=headers)
-        if res.status_code != 200:
-            raise Exception("Failed. HTTPS ERROR CODE: {}".format(res.status_code))
-    except Exception as e:
-        raise
+    res = session.post(endpoint, json=query, headers=headers)
+    if res.status_code == 200:
+        raise Exception("Failed. HTTPS ERROR CODE: {}".format(res.status_code))
 
     return res.json()
 

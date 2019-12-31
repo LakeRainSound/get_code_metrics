@@ -1,5 +1,5 @@
 import get_code_metrics.github_api.post_query as pq
-from sys import exc_info
+import traceback
 
 
 class LabelInfo:
@@ -54,33 +54,30 @@ class LabelInfo:
         cursor = 'null'
         label_info = {"title_and_label": []}
 
-        try:
-            # 全てのissueのラベルデータを取得
-            while has_next_page:
-                query = self.create_issues_info_query(name_with_owner, cursor)
-                data_info = pq.post_query(query, self.access_token)
+        # 全てのissueのラベルデータを取得
+        while has_next_page:
+            query = self.create_issues_info_query(name_with_owner, cursor)
+            data_info = pq.post_query(query, self.access_token)
 
-                # repositoryが存在しないならerrorオブジェクトを返す
-                if 'errors' in data_info:
-                    return {'errors': data_info['errors']}
+            # repositoryが存在しないならerrorオブジェクトを返す
+            if 'errors' in data_info:
+                return {'errors': data_info['errors']}
 
-                issues_info = data_info['data']['repository']['issues']
+            issues_info = data_info['data']['repository']['issues']
 
-                # 初回はissueの数を入れる
-                label_info.setdefault("closedIssueCount", issues_info['totalCount'])
+            # 初回はissueの数を入れる
+            label_info.setdefault("closedIssueCount", issues_info['totalCount'])
 
-                # title_and_labelリストに追加
-                for issue in issues_info['title_and_label']:
-                    label_info["title_and_label"].append(issue)
+            # title_and_labelリストに追加
+            for issue in issues_info['title_and_label']:
+                label_info["title_and_label"].append(issue)
 
-                # 最後に続きがあるか判定，cursorに続きを代入
-                has_next_page = issues_info['pageInfo']['hasNextPage']
-                cursor = issues_info['pageInfo']['endCursor']
+            # 最後に続きがあるか判定，cursorに続きを代入
+            has_next_page = issues_info['pageInfo']['hasNextPage']
+            cursor = issues_info['pageInfo']['endCursor']
 
-                # API制限を回避
-                pq.avoid_api_limit(data_info)
-        except Exception as e:
-            raise
+            # API制限を回避
+            pq.avoid_api_limit(data_info)
 
         return label_info
 
@@ -114,8 +111,8 @@ class LabelInfo:
                 label_metrics = self._get_label_metrics(issues)
                 all_repositories_label_metrics.update({repository: label_metrics})
             except Exception as e:
-                tb = exc_info()[2]
-                print('ERROR: {} {}'.format(repository, e.with_traceback(tb)))
+                tb = traceback.format_exc(limit=1)
+                print('ERROR: {} {}'.format(repository, tb))
                 return {repository: pq.get_post_error(e)}
 
         return all_repositories_label_metrics
