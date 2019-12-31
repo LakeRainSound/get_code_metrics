@@ -20,7 +20,7 @@ def post_query(query, access_token):
     session.mount('http://', HTTPAdapter(max_retries=retries))
 
     res = session.post(endpoint, json=query, headers=headers)
-    if res.status_code == 200:
+    if res.status_code != 200:
         raise Exception("Failed. HTTPS ERROR CODE: {}".format(res.status_code))
 
     return res.json()
@@ -44,6 +44,7 @@ def first_avoid_api_limit(access_token: str):
     except Exception as e:
         print('ERROR: first_avoid_api')
         return
+
     # API制限を回避
     if data_info['data']['rateLimit']['remaining'] <= 1000:
         time.sleep(3600)

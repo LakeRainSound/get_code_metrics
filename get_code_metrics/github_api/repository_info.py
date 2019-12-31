@@ -1,5 +1,10 @@
 import get_code_metrics.github_api.post_query as pq
 import traceback
+from tqdm import tqdm
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class RepositoryInfo:
@@ -66,8 +71,16 @@ class RepositoryInfo:
         # APIがはじめに制限にかかりそうならsleepを挟む
         pq.first_avoid_api_limit(self.access_token)
 
+        pbar = tqdm(repository_list,
+                    total=len(repository_list),
+                    desc="GitHub API(Repo Info)",
+                    unit="repo")
+
+        logger.info('GitHub API(Repo Info) Start')
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
             res_all_repository.update({repository: repository_info})
+            pbar.update()
 
+        logger.info('GitHub API(Repo Info) Done')
         return res_all_repository

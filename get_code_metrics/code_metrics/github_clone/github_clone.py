@@ -116,7 +116,7 @@ class GHQ(object):
             if ghq_process is not None:
                 ghq_process.terminate()
                 ghq_process.wait(60)
-            logger.error("Done")
+            logger.error("Cloning Done")
         return self.list()
 
     def list(self) -> 'List[str]':

@@ -1,5 +1,10 @@
 import get_code_metrics.github_api.post_query as pq
 import traceback
+from tqdm import tqdm
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class LabelInfo:
@@ -105,6 +110,12 @@ class LabelInfo:
         # APIがはじめに制限にかかりそうならsleepを挟む
         pq.first_avoid_api_limit(self.access_token)
 
+        pbar = tqdm(repository_list,
+                    total=len(repository_list),
+                    desc="GitHub API(Label Info)",
+                    unit="repo")
+
+        logger.info('GitHub API(Label Info) Start')
         for repository in repository_list:
             try:
                 issues = self.get_issues(repository)
@@ -114,5 +125,7 @@ class LabelInfo:
                 tb = traceback.format_exc(limit=1)
                 print('ERROR: {} {}'.format(repository, tb))
                 return {repository: pq.get_post_error(e)}
+            pbar.update()
 
+        logger.info('GitHub API(Label Info) Done')
         return all_repositories_label_metrics

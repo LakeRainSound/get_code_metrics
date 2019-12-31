@@ -60,6 +60,6 @@ class Cloc:
                 cloc_json = self._get_error_massage(cloc_result_list)
             else:
                 cloc_json = self.get_cloc_dict(cloc_result_list)
-            cloc_result.update({repository_name: {"cloc": cloc_json}})
+            cloc_result[repository_name] = {"cloc": cloc_json}
 
         return cloc_result
