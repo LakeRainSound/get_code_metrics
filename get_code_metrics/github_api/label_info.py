@@ -4,9 +4,6 @@ from tqdm import tqdm
 import logging
 
 
-logger = logging.getLogger(__name__)
-
-
 class LabelInfo:
     def __init__(self, access_token):
         self.access_token = access_token
@@ -111,11 +108,9 @@ class LabelInfo:
         pq.first_avoid_api_limit(self.access_token)
 
         pbar = tqdm(repository_list,
-                    total=len(repository_list),
                     desc="GitHub API(Label Info)",
                     unit="repo")
 
-        logger.info('GitHub API(Label Info) Start')
         for repository in repository_list:
             try:
                 issues = self.get_issues(repository)
@@ -127,5 +122,4 @@ class LabelInfo:
                 return {repository: pq.get_post_error(e)}
             pbar.update()
 
-        logger.info('GitHub API(Label Info) Done')
         return all_repositories_label_metrics
