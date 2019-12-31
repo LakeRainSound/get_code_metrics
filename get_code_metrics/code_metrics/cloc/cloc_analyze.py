@@ -26,20 +26,20 @@ class Cloc:
         return False
 
     @staticmethod
-    def _get_error_massage(repository_name, cloc_result_list):
+    def _get_error_massage(cloc_result_list):
         cloc_result_str = ''.join(cloc_result_list)
-        return {repository_name: {'cloc': {'errors': cloc_result_str}}}
+        return {'errors': cloc_result_str}
 
     @staticmethod
-    def get_cloc_dict(repository_name, cloc_result_list):
+    def get_cloc_dict(cloc_result_list):
         # listが空なら(repositoryに中身がないなら)そのまま返す
         if len(cloc_result_list) == 0:
-            return {repository_name: {'cloc': {}}}
+            return {}
 
         cloc_result_str = ''.join(cloc_result_list)
         cloc_result_json = json.loads(cloc_result_str)
 
-        return {repository_name: {'cloc': cloc_result_json}}
+        return cloc_result_json
 
     def get_cloc_results(self):
         cloc_result = {}
@@ -57,12 +57,9 @@ class Cloc:
 
             # clocの結果にエラーがあればエラーメッセージを記録
             if self._is_error(cloc_result_list):
-                error_message = self._get_error_massage(repository_name, cloc_result_list)
-                cloc_result.update(error_message)
-                continue
-
-            # clocの結果をdict化する
-            cloc_json = self.get_cloc_dict(repository_name, cloc_result_list)
-            cloc_result.update(cloc_json)
+                cloc_json = self._get_error_massage(cloc_result_list)
+            else:
+                cloc_json = self.get_cloc_dict(cloc_result_list)
+            cloc_result.update({repository_name: {"cloc": cloc_json}})
 
         return cloc_result
