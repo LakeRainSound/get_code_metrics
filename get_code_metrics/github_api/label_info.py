@@ -111,6 +111,7 @@ class LabelInfo:
                     desc="GitHub API(Label Info)",
                     unit="repo")
 
+        print('Start Label Info')
         for repository in repository_list:
             try:
                 issues = self.get_issues(repository)
@@ -122,4 +123,5 @@ class LabelInfo:
                 return {repository: pq.get_post_error(e)}
             pbar.update()
 
+        print('Finish Label Info')
         return all_repositories_label_metrics

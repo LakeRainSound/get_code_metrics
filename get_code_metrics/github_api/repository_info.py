@@ -71,9 +71,11 @@ class RepositoryInfo:
                     desc="GitHub API(Repo Info)",
                     unit="repo")
 
+        print('Start Repo Info')
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
             res_all_repository.update({repository: repository_info})
             pbar.update()
 
+        print('Finish Repo Info')
         return res_all_repository
