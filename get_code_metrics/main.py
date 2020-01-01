@@ -1,21 +1,21 @@
-import get_code_metrics.cli as cli
+from get_code_metrics.cli import command_parser
 import get_code_metrics.code_metrics.code_analyzer as code_analyze
-import get_code_metrics.github_api.github_api as ghapi
-import get_code_metrics.gcm_output.output as gcmo
+from get_code_metrics.github_api.github_api import get_github_api_result
+from get_code_metrics.gcm_output.output import GCMOUT
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 
 def main():
     # start時間を格納
-    output_result = gcmo.GCMOUT()
+    output_result = GCMOUT()
     output_result.set_start_time()
 
     # 引数としてパスを私そのパスが示すfileからリストが返される
-    repository_list, path_to_output_file, ghq_root, access_token = cli.command_parser()
+    repository_list, path_to_output_file, ghq_root, access_token = command_parser()
 
     with ThreadPoolExecutor(max_workers=2, thread_name_prefix='thread') as executor:
-        futures = [executor.submit(ghapi.get_github_api_result,
+        futures = [executor.submit(get_github_api_result,
                                    repository_list,
                                    access_token),
                    executor.submit(code_analyze.get_code_metrics,

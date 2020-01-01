@@ -56,9 +56,9 @@ def _get_repository_list(path_to_input_file: str):
     with open(path_to_input_file, 'r') as f:
         for repository in f:
             # 末尾の改行を削除してリストに追加
-            repository = re.sub('[\r\n]+$', '', repository)
+            repository = repository.rstrip(os.linesep)
             # 最後に空行入れたりしてる場合を排除
-            if repository == '' or len(repository) == 0:
+            if len(repository) == 0:
                 continue
             repository_list.append(repository)
 

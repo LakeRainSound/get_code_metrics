@@ -14,8 +14,8 @@ class GCMOUT:
     def set_finish_time(self):
         self.finish_time = datetime.datetime.now()
 
-    def output_linked_json(self, dict_list, path_to_output_file: Path):
-        if len(dict_list) == 0:
+    def output_linked_json(self, result_list, path_to_output_file: Path):
+        if len(result_list) == 0 or None in result_list:
             return None
 
         # 時間情報を結果に書き込む
@@ -23,12 +23,22 @@ class GCMOUT:
                                               'finish time': self.finish_time.isoformat()}}
                                 )
 
-        self.all_results.update(dict_list[0])
+        self.all_results.setdefault('repository', {})
 
-        for dict_key in dict_list[0]['repository'].keys():
-            for dict_ in dict_list:
-                if dict_key in dict_['repository']:
-                    self.all_results['repository'][dict_key].update(dict_['repository'][dict_key])
+        # key(repository name)を全て取得
+        repositories = {}
+        for result in result_list:
+            repositories = set(repositories) | set(result.keys())
+
+        for repo_name in repositories:
+            merged = {}
+            for result in result_list:
+                current_res = result.get(repo_name)
+                # 値が無い時はcontinue
+                if current_res is None:
+                    continue
+                merged = {**merged, **current_res}
+            self.all_results['repository'][repo_name] = merged
 
         with open(str(path_to_output_file), "w") as f:
             json.dump(self.all_results, f, indent=4)

@@ -1,10 +1,10 @@
-import time
-import get_code_metrics.github_api.post_query as post_query
+import get_code_metrics.github_api.post_query as pq
+import traceback
+from tqdm import tqdm
+import logging
 
 
 class LabelInfo:
-    access_token = ''
-
     def __init__(self, access_token):
         self.access_token = access_token
 
@@ -59,13 +59,11 @@ class LabelInfo:
         # 全てのissueのラベルデータを取得
         while has_next_page:
             query = self.create_issues_info_query(name_with_owner, cursor)
-            data_info = post_query.post_query(query, self.access_token)
+            data_info = pq.post_query(query, self.access_token)
 
-            # repositoryが存在しないならNoneを返す
+            # repositoryが存在しないならerrorオブジェクトを返す
             if 'errors' in data_info:
-                print('ERRORS:', name_with_owner,
-                      'doesn\'t exists or has errors. so can\'t get it.')
-                return None
+                return {'errors': data_info['errors']}
 
             issues_info = data_info['data']['repository']['issues']
 
@@ -81,19 +79,18 @@ class LabelInfo:
             cursor = issues_info['pageInfo']['endCursor']
 
             # API制限を回避
-            if data_info['data']['rateLimit']['remaining'] <= 1000:
-                time.sleep(3600)
+            pq.avoid_api_limit(data_info)
 
         return label_info
 
-    def get_label_metrics(self, name_with_owner):
-        issues = self.get_issues(name_with_owner)
+    @staticmethod
+    def _get_label_metrics(issues):
+        label_metrics = {}
 
         # errorが発生した場合
-        if issues is None:
-            return None
+        if 'errors' in issues:
+            return issues
 
-        label_metrics = {}
         label_metrics.update({'closedIssueCount': issues['closedIssueCount']})
         has_label_count = 0
         for issue in issues["title_and_label"]:
@@ -108,14 +105,23 @@ class LabelInfo:
         all_repositories_label_metrics = {}
 
         # APIがはじめに制限にかかりそうならsleepを挟む
-        post_query.avoid_api_limit(self.access_token)
+        pq.first_avoid_api_limit(self.access_token)
 
+        pbar = tqdm(repository_list,
+                    desc="GitHub API(Label Info)",
+                    unit="repo")
+
+        print('Start Label Info')
         for repository in repository_list:
-            label_metrics = self.get_label_metrics(repository)
+            try:
+                issues = self.get_issues(repository)
+                label_metrics = self._get_label_metrics(issues)
+                all_repositories_label_metrics.update({repository: label_metrics})
+            except Exception as e:
+                tb = traceback.format_exc(limit=1)
+                print('ERROR: {} {}'.format(repository, tb))
+                return {repository: pq.get_post_error(e)}
+            pbar.update()
 
-            # Noneが返ってきていたらエラーが発生したかリポジトリが存在しないかなので飛ばす
-            if label_metrics is None:
-                continue
-            all_repositories_label_metrics.update({repository: label_metrics})
-
+        print('Finish Label Info')
         return all_repositories_label_metrics

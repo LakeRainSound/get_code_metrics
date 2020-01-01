@@ -1,11 +1,9 @@
-import time
-import get_code_metrics.github_api.post_query as post_query
+import get_code_metrics.github_api.post_query as pq
+import traceback
+from tqdm import tqdm
 
 
 class RepositoryInfo:
-    query_repository_state = ''
-    access_token = ''
-
     def __init__(self, token):
         self.access_token = token
 
@@ -47,17 +45,19 @@ class RepositoryInfo:
         # queryを作成
         query = self.create_repository_info_query(name_with_owner)
         # queryとアクセストークンを渡してpost
-        repository_info = post_query.post_query(query, self.access_token)
+        try:
+            repository_info = pq.post_query(query, self.access_token)
+        except Exception as e:
+            tb = traceback.format_exc(limit=1)
+            print('ERROR: {} {}'.format(name_with_owner, tb))
+            return pq.get_post_error(e)
 
-        # repositoryが存在しないならNoneを返す
+        # repositoryが存在しないならerrorオブジェクトを返す
         if 'errors' in repository_info:
-            print('ERRORS:', name_with_owner,
-                  'doesn\'t exists or has errors. so can\'t get it.')
-            return None
+            return {'errors': repository_info['errors']}
 
         # API制限回避のためrateLimitが1000以下ならsleep
-        if repository_info['data']['rateLimit']['remaining'] <= 1000:
-            time.sleep(3600)
+        pq.avoid_api_limit(repository_info)
 
         return repository_info['data']['repository']
 
@@ -65,14 +65,17 @@ class RepositoryInfo:
         res_all_repository = {}
 
         # APIがはじめに制限にかかりそうならsleepを挟む
-        post_query.avoid_api_limit(self.access_token)
+        pq.first_avoid_api_limit(self.access_token)
 
+        pbar = tqdm(repository_list,
+                    desc="GitHub API(Repo Info)",
+                    unit="repo")
+
+        print('Start Repo Info')
         for repository in repository_list:
             repository_info = self.get_repository_info(repository)
-
-            # 返り値がNoneなら何もしない
-            if repository_info is None:
-                continue
             res_all_repository.update({repository: repository_info})
+            pbar.update()
 
+        print('Finish Repo Info')
         return res_all_repository
