@@ -28,7 +28,7 @@ class Cloc:
     @staticmethod
     def _get_error_massage(cloc_result_list):
         cloc_result_str = ''.join(cloc_result_list)
-        return {'errors': cloc_result_str}
+        return {'errors': [{'message': cloc_result_str}]}
 
     @staticmethod
     def get_cloc_dict(cloc_result_list):
