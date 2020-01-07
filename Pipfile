@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 requests = "*"
 tqdm = "*"
+get-code-metrics = {editable = true,path = "."}
 
 [requires]
 python_version = "3.7"
