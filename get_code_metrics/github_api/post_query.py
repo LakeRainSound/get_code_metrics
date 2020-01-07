@@ -52,4 +52,5 @@ def first_avoid_api_limit(access_token: str):
 
 def avoid_api_limit(data_info):
     if data_info['data']['rateLimit']['remaining'] <= 1000:
+        print('sleep 3600s')
         time.sleep(3600)

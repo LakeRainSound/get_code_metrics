@@ -1,7 +1,7 @@
 import get_code_metrics.github_api.post_query as pq
 import traceback
 from tqdm import tqdm
-import logging
+import time
 
 
 class LabelInfo:
@@ -77,7 +77,7 @@ class LabelInfo:
             # 最後に続きがあるか判定，cursorに続きを代入
             has_next_page = issues_info['pageInfo']['hasNextPage']
             cursor = issues_info['pageInfo']['endCursor']
-
+            time.sleep(3)
             # API制限を回避
             pq.avoid_api_limit(data_info)
 
