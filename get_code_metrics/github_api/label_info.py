@@ -120,7 +120,7 @@ class LabelInfo:
             except Exception as e:
                 tb = traceback.format_exc(limit=1)
                 print('ERROR: {} {}'.format(repository, tb))
-                return {repository: pq.get_post_error(e)}
+                all_repositories_label_metrics.update({repository: pq.get_post_error(e)})
             pbar.update()
 
         print('Finish Label Info')
