@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 import json
+from tqdm import tqdm
 
 
 class Cloc:
@@ -43,6 +44,9 @@ class Cloc:
 
     def get_cloc_results(self):
         cloc_result = {}
+        pbar = tqdm(self.repository_list,
+                    desc="CLOC",
+                    unit="repo")
         for repository_name in self.repository_list:
             # ディレクトリのパスを代入
             repository_dir = self.path_to_ghq_root / 'github.com' / repository_name
@@ -61,5 +65,6 @@ class Cloc:
             else:
                 cloc_json = self.get_cloc_dict(cloc_result_list)
             cloc_result[repository_name] = {"cloc": cloc_json}
+            pbar.update()
 
         return cloc_result
