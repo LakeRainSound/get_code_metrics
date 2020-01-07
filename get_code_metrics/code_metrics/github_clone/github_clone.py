@@ -58,6 +58,8 @@ class GHQ(object):
     LIST_CMD = "list"
 
     def __init__(self, ghq_binary: 'Path', clone_dest: 'Path'):
+        if not ghq_binary.is_absolute():
+            ghq_binary = ghq_binary.expanduser().resolve()
         if not ghq_binary.exists():
             ghq_binary = _download_ghq_binary(ghq_binary.parent)
         self.ghq = ghq_binary

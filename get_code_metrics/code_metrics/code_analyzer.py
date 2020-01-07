@@ -5,8 +5,9 @@ from pathlib import Path
 
 def get_code_metrics(repository_list, ghq_root: Path):
     # repositoryをcloneする
+    ghq_bin = Path('./ghq').expanduser().resolve()
     repository_url_list = ghclone.get_github_repository_url_list(repository_list)
-    clone = ghclone.GHQ(Path('./ghq'), ghq_root)
+    clone = ghclone.GHQ(ghq_bin, ghq_root)
     clone.clone(repository_url_list)
 
     # clocを実行
