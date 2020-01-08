@@ -24,7 +24,6 @@ class Cloc:
         for cloc_result in cloc_result_list:
             row = re.compile(r'\d+ error')
             if row.search(cloc_result) is not None:
-                print('re ですわ')
                 return True
 
         return False
