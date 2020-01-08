@@ -12,7 +12,7 @@ class Cloc:
     @staticmethod
     def _get_analyzed_cloc(repository_dir: Path):
         return subprocess.Popen(
-            ['cloc', '--json', str(repository_dir)],
+            ['cloc', '--json', '--timeout', '120', str(repository_dir)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding='utf-8'
