@@ -63,7 +63,7 @@ class GHQ(object):
         self.ghq = ghq_binary
         self.dest = clone_dest
         self._options = {
-            self.CLONE_CMD: ["-u", "-P"],
+            self.CLONE_CMD: ["-u", "-P", "--shallow"],
             self.LIST_CMD: ["-p"]
         }
 
