@@ -17,7 +17,7 @@ class LabelInfo:
                           totalCount
                           title_and_label: nodes {
                             title
-                            labels(first: 20) {
+                            labels{
                               labelCount: totalCount
                             }
                           }
@@ -77,7 +77,7 @@ class LabelInfo:
             # 最後に続きがあるか判定，cursorに続きを代入
             has_next_page = issues_info['pageInfo']['hasNextPage']
             cursor = issues_info['pageInfo']['endCursor']
-            time.sleep(3)
+            time.sleep(1)
             # API制限を回避
             pq.avoid_api_limit(data_info)
 
