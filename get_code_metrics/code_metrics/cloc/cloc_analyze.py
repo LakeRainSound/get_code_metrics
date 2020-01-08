@@ -21,7 +21,7 @@ class Cloc:
     @staticmethod
     def _is_error(cloc_result_list):
         for cloc_result in cloc_result_list:
-            if 'Unable to read:' in cloc_result:
+            if 'error' in cloc_result:
                 return True
 
         return False
@@ -38,7 +38,11 @@ class Cloc:
             return {}
 
         cloc_result_str = ''.join(cloc_result_list)
-        cloc_result_json = json.loads(cloc_result_str)
+
+        try:
+            cloc_result_json = json.loads(cloc_result_str)
+        except Exception as e:
+            cloc_result_json = {'errors': [{'message': cloc_result_str}]}
 
         return cloc_result_json
 

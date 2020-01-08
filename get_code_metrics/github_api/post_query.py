@@ -20,6 +20,12 @@ def post_query(query, access_token):
     session.mount('http://', HTTPAdapter(max_retries=retries))
 
     res = session.post(endpoint, json=query, headers=headers)
+
+    if res.status_code == 403:
+        print('ERROR: HTTPS 403')
+        time.sleep(3600)
+        res = session.post(endpoint, json=query, headers=headers)
+
     if res.status_code != 200:
         raise Exception("Failed. HTTPS ERROR CODE: {}".format(res.status_code))
 
