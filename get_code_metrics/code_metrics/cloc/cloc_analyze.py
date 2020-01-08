@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 import json
+import re
 from tqdm import tqdm
 
 
@@ -21,7 +22,7 @@ class Cloc:
     @staticmethod
     def _is_error(cloc_result_list):
         for cloc_result in cloc_result_list:
-            if 'error' in cloc_result:
+            if re.search(r'\d+ error', cloc_result) is not None:
                 return True
 
         return False
