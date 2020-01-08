@@ -22,7 +22,9 @@ class Cloc:
     @staticmethod
     def _is_error(cloc_result_list):
         for cloc_result in cloc_result_list:
-            if re.search(r'\d+ error', cloc_result) is not None:
+            row = re.compile(r'\d+ error')
+            if row.search(cloc_result) is not None:
+                print('re ですわ')
                 return True
 
         return False
