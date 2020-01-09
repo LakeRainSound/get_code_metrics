@@ -12,15 +12,17 @@ def main():
     output_result.set_start_time()
 
     # 引数としてパスを私そのパスが示すfileからリストが返される
-    repository_list, path_to_output_file, ghq_root, access_token = command_parser()
+    repository_list, path_to_output_file, ghq_root, access_token, use_cache = command_parser()
 
     with ThreadPoolExecutor(max_workers=2, thread_name_prefix='thread') as executor:
         futures = [executor.submit(get_github_api_result,
                                    repository_list,
-                                   access_token),
+                                   access_token,
+                                   use_cache),
                    executor.submit(code_analyze.get_code_metrics,
                                    repository_list,
-                                   ghq_root)
+                                   ghq_root,
+                                   use_cache)
                    ]
 
     result_list = []
