@@ -26,17 +26,17 @@ def _get_linked_github_api_result(result_list):
     return github_results
 
 
-def get_github_api_result(repository_list, access_token):
+def get_github_api_result(repository_list, access_token, use_cache: bool):
     result_github_api_list = []
 
     # github apiでrepository情報を取得する
-    repo_info = RepositoryInfo(access_token)
+    repo_info = RepositoryInfo(access_token, use_cache)
     result_repo_info = repo_info.get_all_repositories_info(repository_list)
     # jsonを結果としてリストに追加
     result_github_api_list.append(result_repo_info)
 
     # github apiでissue情報を取得する
-    label_info = LabelInfo(access_token)
+    label_info = LabelInfo(access_token, use_cache)
     result_label_info = label_info.get_all_repositories_label_metrics(repository_list)
     # jsonを結果としてリストに追加
     result_github_api_list.append(result_label_info)

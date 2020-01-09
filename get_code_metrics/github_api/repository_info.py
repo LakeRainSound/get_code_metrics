@@ -1,11 +1,14 @@
 import get_code_metrics.github_api.post_query as pq
+from pathlib import Path
+from get_code_metrics.gcm_cache.gcm_cache import GCMCache
 import traceback
 from tqdm import tqdm
 
 
 class RepositoryInfo:
-    def __init__(self, token):
+    def __init__(self, token: str, use_cache: bool):
         self.access_token = token
+        self.use_cache = use_cache  # type: bool
 
     @staticmethod
     def create_repository_info_query(name_with_owner: str):
@@ -72,10 +75,27 @@ class RepositoryInfo:
                     unit="repo")
 
         print('Start Repo Info')
+        # キャッシュを取得
+        cache_path = Path('./.cache_gcm/.gcm_label_cache.json').expanduser().resolve()
+        gcm_cache = GCMCache(cache_path)
+        cache_dict = gcm_cache.get_repository_cache()
+
+        # Repository Infoの取得開始
         for repository in repository_list:
+            # キャッシュを使う，かつキャッシュにリポジトリが存在している場合
+            if self.use_cache and gcm_cache.exist_repository_in_cache(repository, cache_dict):
+                res_all_repository[repository] = cache_dict[repository]
+                pbar.update()
+                continue
+
             repository_info = self.get_repository_info(repository)
             res_all_repository.update({repository: repository_info})
+            # エラーがなければキャッシュに追加
+            if not ('errors' in repository_info.keys()):
+                cache_dict[repository] = repository_info
             pbar.update()
 
+        # キャッシュファイルを更新
+        gcm_cache.update_repository_cache_file(cache_dict)
         print('Finish Repo Info')
         return res_all_repository
