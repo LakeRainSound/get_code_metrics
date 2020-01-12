@@ -1,3 +1,5 @@
+import json
+
 import get_code_metrics.github_api.post_query as pq
 from pathlib import Path
 from get_code_metrics.gcm_cache.gcm_cache import GCMCache
@@ -23,6 +25,7 @@ class RepositoryInfo:
             hasIssuesEnabled
             isArchived
             isFork
+            forkCount
             isDisabled
             url
           }
@@ -50,6 +53,7 @@ class RepositoryInfo:
         # queryとアクセストークンを渡してpost
         try:
             repository_info = pq.post_query(query, self.access_token)
+            print(json.dumps(repository_info, indent=4))
         except Exception as e:
             tb = traceback.format_exc(limit=1)
             print('ERROR: {} {}'.format(name_with_owner, tb))
@@ -98,4 +102,5 @@ class RepositoryInfo:
         # キャッシュファイルを更新
         gcm_cache.update_repository_cache_file(cache_dict)
         print('Finish Repo Info')
+        print(json.dumps(res_all_repository, indent=4))
         return res_all_repository
