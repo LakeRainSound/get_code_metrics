@@ -16,23 +16,27 @@ class RepositoryInfo:
     def create_repository_info_query(name_with_owner: str):
         query_state = """
         query{
-          repository(owner: "%s", name: "%s") {
-            nameWithOwner
-            createdAt
-            stargazers {
-              totalCount
-            }
-            hasIssuesEnabled
-            isArchived
-            isFork
-            forkCount
-            isDisabled
-            url
-          }
-          rateLimit {
-            remaining
-          }
-        }
+  repository(owner: "%s", name: "%s") {
+    nameWithOwner
+    createdAt
+    stargazers {
+      totalCount
+    }
+    hasIssuesEnabled
+    isArchived
+    isFork
+    watchers{
+      totalCount
+    }
+    forkCount
+    isDisabled
+    url
+  }
+  rateLimit {
+    remaining
+  }
+}
+
         """
 
         # owner, nameが存在しない場合はNoneをreturn
@@ -53,7 +57,6 @@ class RepositoryInfo:
         # queryとアクセストークンを渡してpost
         try:
             repository_info = pq.post_query(query, self.access_token)
-            print(json.dumps(repository_info, indent=4))
         except Exception as e:
             tb = traceback.format_exc(limit=1)
             print('ERROR: {} {}'.format(name_with_owner, tb))
@@ -102,5 +105,4 @@ class RepositoryInfo:
         # キャッシュファイルを更新
         gcm_cache.update_repository_cache_file(cache_dict)
         print('Finish Repo Info')
-        print(json.dumps(res_all_repository, indent=4))
         return res_all_repository

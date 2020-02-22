@@ -32,9 +32,8 @@ def command_parser():
                         action='store_true',
                         help='If not exist specified directory, make it.')
 
-    parser.add_argument('--no_cache',
-                        type=bool,
-                        default=False,
+    parser.add_argument('--no-cache',
+                        action='store_true',
                         help='Use Cache or not (default use)')
 
     args = parser.parse_args()
