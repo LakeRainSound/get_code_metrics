@@ -32,6 +32,10 @@ def command_parser():
                         action='store_true',
                         help='If not exist specified directory, make it.')
 
+    parser.add_argument('--no-cache',
+                        action='store_true',
+                        help='Use Cache or not (default use)')
+
     args = parser.parse_args()
 
     repository_list = _get_repository_list(args.path_to_input_file)
@@ -48,7 +52,9 @@ def command_parser():
 
     access_token = _get_access_token(args.token)
 
-    return repository_list, out_path, clone_path, access_token
+    # use cache
+    use_cache = not args.no_cache
+    return repository_list, out_path, clone_path, access_token, use_cache
 
 
 def _get_repository_list(path_to_input_file: str):

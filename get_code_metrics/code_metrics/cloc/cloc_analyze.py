@@ -1,19 +1,21 @@
 import subprocess
 from pathlib import Path
+from get_code_metrics.gcm_cache.gcm_cache import GCMCache
 import json
 import re
 from tqdm import tqdm
 
 
 class Cloc:
-    def __init__(self, repository_list, path_to_ghq_root: Path):
+    def __init__(self, repository_list, path_to_ghq_root: Path, use_cache: bool):
         self.repository_list = repository_list
         self.path_to_ghq_root = path_to_ghq_root
+        self.use_cache = use_cache
 
     @staticmethod
     def _get_analyzed_cloc(repository_dir: Path):
         return subprocess.Popen(
-            ['cloc', '--json', '--timeout', '120', str(repository_dir)],
+            ['cloc', '--json', '--timeout', '300', str(repository_dir)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding='utf-8'
@@ -53,7 +55,19 @@ class Cloc:
         pbar = tqdm(self.repository_list,
                     desc="CLOC",
                     unit="repo")
+
+        # キャッシュを取得
+        cache_path = Path('./.cache_gcm/.gcm_cloc_cache.json').expanduser().resolve()
+        gcm_cache = GCMCache(cache_path)
+        cache_dict = gcm_cache.get_repository_cache()
+
         for repository_name in self.repository_list:
+            # キャッシュを使う，かつキャッシュにリポジトリが存在している場合
+            if self.use_cache and gcm_cache.exist_repository_in_cache(repository_name, cache_dict):
+                cloc_result[repository_name] = cache_dict[repository_name]
+                pbar.update()
+                continue
+
             # ディレクトリのパスを代入
             repository_dir = self.path_to_ghq_root / 'github.com' / repository_name
 
@@ -70,7 +84,12 @@ class Cloc:
                 cloc_json = self._get_error_massage(cloc_result_list)
             else:
                 cloc_json = self.get_cloc_dict(cloc_result_list)
+                # エラーがなければキャッシュに追加
+                cache_dict[repository_name] = {"cloc": cloc_json}
+
             cloc_result[repository_name] = {"cloc": cloc_json}
             pbar.update()
 
+        # エラーのないものでキャッシュファイルを更新
+        gcm_cache.update_repository_cache_file(cache_dict)
         return cloc_result

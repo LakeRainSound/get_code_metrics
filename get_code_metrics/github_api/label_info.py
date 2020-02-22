@@ -1,12 +1,15 @@
 import get_code_metrics.github_api.post_query as pq
+from get_code_metrics.gcm_cache.gcm_cache import GCMCache
+from pathlib import Path
 import traceback
 from tqdm import tqdm
 import time
 
 
 class LabelInfo:
-    def __init__(self, access_token):
+    def __init__(self, access_token, use_cache: bool):
         self.access_token = access_token
+        self.use_cache = use_cache
 
     @staticmethod
     def create_issues_info_query(name_with_owner: str, cursor: str):
@@ -112,16 +115,35 @@ class LabelInfo:
                     unit="repo")
 
         print('Start Label Info')
+        # キャッシュを取得
+        cache_path = Path('./.cache_gcm/.gcm_repo_cache.json').expanduser().resolve()
+        gcm_cache = GCMCache(cache_path)
+        cache_dict = gcm_cache.get_repository_cache()
+
+        # リポジトリのラベル付与率の取得を開始
         for repository in repository_list:
             try:
+                # キャッシュを使う，かつキャッシュにリポジトリが存在している場合
+                if self.use_cache and gcm_cache.exist_repository_in_cache(repository, cache_dict):
+                    all_repositories_label_metrics[repository] = cache_dict[repository]
+                    pbar.update()
+                    continue
+                # 存在しない場合はそのまま実行
                 issues = self.get_issues(repository)
                 label_metrics = self._get_label_metrics(issues)
                 all_repositories_label_metrics.update({repository: label_metrics})
+
+                # エラーがなければキャッシュに追加
+                if not ('errors' in label_metrics.keys()):
+                    cache_dict[repository] = label_metrics
+
             except Exception as e:
                 tb = traceback.format_exc(limit=1)
                 print('ERROR: {} {}'.format(repository, tb))
                 all_repositories_label_metrics.update({repository: pq.get_post_error(e)})
             pbar.update()
 
+        # キャッシュファイルを更新
+        gcm_cache.update_repository_cache_file(cache_dict)
         print('Finish Label Info')
         return all_repositories_label_metrics
