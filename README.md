@@ -168,7 +168,6 @@ If you don't use this option, get_code_metrics uses $GCM_GITHUB_TOKEN. If $GCM_G
 
 - `--no-cache`
 If repositories information which you want to get exist in cache file, get_code_metrics uses cache by default.
-
 `--no-cache` option disable using cache. 
 
 
