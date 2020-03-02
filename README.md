@@ -15,7 +15,7 @@ get_code_metrics/main.py path_to_input_file --out path_to_output_file --token GI
 ```
 
 ### input file example
-You have to specify Author/RepositoryName in GitHub Repository.
+You have to specify `Author/RepositoryName` in GitHub Repository. Here is example.
 ```input.txt
 LakeRainSound/get_code_metrics
 LakeRainSound/sample-java-project
