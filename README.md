@@ -14,14 +14,15 @@ example
 get_code_metrics/main.py path_to_input_file --out path_to_output_file --token GITHUB_ACCSESS_TOKEN
 ```
 
-### input example
+### input file example
+You have to specify Author/RepositoryName in GitHub Repository.
 ```input.txt
 LakeRainSound/get_code_metrics
 LakeRainSound/sample-java-project
 LakeRainSound/empty
 ```
 
-### output example
+### output file example
 ```output.json
 {
     "datetime": {
