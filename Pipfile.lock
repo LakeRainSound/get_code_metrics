@@ -18,10 +18,10 @@
     "default": {
         "certifi": {
             "hashes": [
-                "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3",
-                "sha256:25b64c7da4cd7479594d035c08c2d809eb4aab3a26e5a990ea98cc450c320f1f"
+                "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c",
+                "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"
             ],
-            "version": "==2019.11.28"
+            "version": "==2020.12.5"
         },
         "chardet": {
             "hashes": [
@@ -29,6 +29,13 @@
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
+        },
+        "funkify": {
+            "hashes": [
+                "sha256:50068de04ca6397d5e6c70d16c17d2503d4a62e33b091ddbb3c617b7c7fe8740",
+                "sha256:a7273eac299f37d0785b7b99a581ee20885451637355e589e653a32d8bd6eaad"
+            ],
+            "version": "==0.3.0"
         },
         "get-code-metrics": {
             "editable": true,
@@ -51,10 +58,10 @@
         },
         "requires": {
             "hashes": [
-                "sha256:bd48cb2deeb69fdffa9b016f18d7a8675a55867cbfcb8335430166779ee20279",
-                "sha256:fc3e63e74ffec0a0cf1144d981ae82ffba99f24aa6023df01e8eedd9f1ac9cd8"
+                "sha256:93d6a54bd59618b6d7ce3d3b4f240147faf8b8b683c8736bd6299e8ae72cfb81",
+                "sha256:c719942326c56ce64d3979e845d25cb0ad7e372948f15ea19546c585b1bd09e5"
             ],
-            "version": "==0.0.3"
+            "version": "==0.9.0"
         },
         "tqdm": {
             "hashes": [
@@ -66,10 +73,11 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:a8a318824cc77d1fd4b2bec2ded92646630d7fe8619497b142c84a9e6f5a7293",
-                "sha256:f3c5fd51747d450d4dcf6f923c81f78f811aab8205fda64b0aba34a4e48b0745"
+                "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc",
+                "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"
             ],
-            "version": "==1.25.7"
+            "index": "pypi",
+            "version": "==1.25.8"
         }
     },
     "develop": {}
